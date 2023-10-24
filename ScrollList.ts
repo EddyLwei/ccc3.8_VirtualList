@@ -230,7 +230,7 @@ export class ScrollList extends ScrollView {
         }
     }
 
-    /**根据下标计算坐标*/
+    /**根据下标计算坐标。 0 ~ length-1*/
     private countPosByIndex(index: number): number {
         let pos = (1 / 2 + index) * this._itemSize;
         //前面距离边框
@@ -243,5 +243,40 @@ export class ScrollList extends ScrollView {
         }
         return pos;
     }
+
+
+
+
+
+
+
+    /**滚动到指定下标*/
+    public scroll2Index(index: number) {
+        this.stopAutoScroll();
+        //太靠近结束点，需要回退屏幕显示数量
+        if (index > this._dataArr.length - this._numItem - 2) {
+            index = this._dataArr.length - this._numItem - 2;
+        }
+        if (index < 0) {
+            index = 0;
+        }
+
+        /**设置滚动坐标*/
+        let pos = this.countPosByIndex(index) - 1 / 2 * this._itemSize;
+        let ve = new Vec2(0, -pos);
+        if (this._direction == SCROLL_HORIZONTAL) {
+            ve = new Vec2(pos, 0);
+        }
+        this.scrollToOffset(ve);//滚动
+
+        for (let x = 0; x < this._itemArr.length; x++) {
+            this.itemRender(this._itemArr[x], index + x);
+        }
+
+        this._dataIndex = this._itemArr.length - 1 + index;//数据下标
+        this._itemIndex = this._itemArr.length - 1;//重新赋值后节点下标为数组内当前最大
+
+    }
+
 
 }
